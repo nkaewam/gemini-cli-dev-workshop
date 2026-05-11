@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 var db = require('../database');
 
-// Middleware to check if user is authenticated (via weak cookie check)
+// Middleware to check if user is authenticated
 function checkAuth(req, res, next) {
     if (!req.cookies || !req.cookies.userId) {
         return res.redirect('/login');
@@ -10,9 +10,8 @@ function checkAuth(req, res, next) {
     next();
 }
 
-// List accounts - Vulnerable to Insecure Direct Object Reference (IDOR) via query param override
+// List accounts
 router.get('/', checkAuth, function(req, res) {
-    // IDOR: If targetUserId is passed in query string, use it without authorization checks!
     var targetUserId = req.query.userId || req.cookies.userId;
     var error = req.query.error || '';
     var success = req.query.success || '';
@@ -41,10 +40,9 @@ router.get('/create', checkAuth, function(req, res) {
     res.render('create-account', { error: '', role: req.cookies.role, fullName: req.cookies.fullName });
 });
 
-// Handle Create Account - Vulnerable to Mass Assignment & Arbitrary Initial Balance
+// Handle Create Account
 router.post('/create', checkAuth, function(req, res) {
     var accountType = req.body.accountType || 'Savings';
-    // Mass Assignment: Trusting client to specify their own starting balance!
     var initialBalance = parseFloat(req.body.balance || 0.00);
     var userId = req.cookies.userId;
     
@@ -72,11 +70,10 @@ router.post('/create', checkAuth, function(req, res) {
     });
 });
 
-// View specific account details - Vulnerable to SQLi and IDOR
+// View specific account details
 router.get('/:accountNumber', checkAuth, function(req, res) {
     var accountNumber = req.params.accountNumber;
 
-    // SQL Injection Vulnerability
     var accQuery = "SELECT * FROM accounts WHERE account_number = '" + accountNumber + "'";
     console.log("[DEBUG] Executing SQL:", accQuery);
 
@@ -85,8 +82,6 @@ router.get('/:accountNumber', checkAuth, function(req, res) {
             return res.redirect('/accounts?error=Account not found or SQL syntax error');
         }
 
-        // IDOR: Notice we do NOT verify if account.user_id == req.cookies.userId
-        // Anyone can view the account transactions and balance!
 
         var txQuery = "SELECT * FROM transactions WHERE from_account = '" + accountNumber + "' OR to_account = '" + accountNumber + "' ORDER BY timestamp DESC";
         db.all(txQuery, function(err, transactions) {

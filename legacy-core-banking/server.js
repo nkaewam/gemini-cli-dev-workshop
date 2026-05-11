@@ -16,7 +16,6 @@ app.use(bodyParser.json());
 app.use(cookieParser());
 
 // Serve custom static assets or styles inline
-// Disabling built-in security headers intentionally for legacy replication
 app.disable('x-powered-by');
 
 // Routes
@@ -42,11 +41,10 @@ app.get('/', function(req, res) {
     });
 });
 
-// Vulnerable Admin Debug Console - Privilege Escalation via Cookie tampering
+// Admin Debug Console
 app.get('/admin', function(req, res) {
-    // Insecure Authorization: Relies purely on plaintext user-controlled cookie value
     if (!req.cookies || req.cookies.role !== 'admin') {
-        return res.status(403).send("Access Denied: Administrator Privileges Required. (Hint: Check your cookies!)");
+        return res.status(403).send("Access Denied: Administrator Privileges Required.");
     }
 
     var queryResult = null;
@@ -81,7 +79,7 @@ app.post('/admin', function(req, res) {
     }
 });
 
-// Global Error Handler exposing Stack Traces (Information Disclosure)
+// Global Error Handler
 app.use(function(err, req, res, next) {
     console.error(err.stack);
     res.status(500).send('<h1>Internal Server Error</h1><pre>' + err.stack + '</pre>');
@@ -92,6 +90,5 @@ var PORT = process.env.PORT || 3000;
 app.listen(PORT, function() {
     console.log('========================================================');
     console.log(' Legacy Core Banking App running on http://localhost:' + PORT);
-    console.log(' WARNING: Intentionally vulnerable application.');
     console.log('========================================================');
 });

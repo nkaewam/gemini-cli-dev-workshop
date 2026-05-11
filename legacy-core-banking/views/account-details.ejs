@@ -20,7 +20,6 @@
 </div>
 
 <h3>Transaction Activity History</h3>
-<p><small>Descriptions rendered directly without HTML escaping to demonstrate <strong>Stored XSS</strong> payloads.</small></p>
 
 <% if (typeof error !== 'undefined' && error) { %>
     <div class="alert"><%- error %></div>
@@ -37,7 +36,7 @@
                 <th>Source Account</th>
                 <th>Destination Account</th>
                 <th>Amount (THB)</th>
-                <th>Memo Description <small>[Stored XSS]</small></th>
+                <th>Memo Description</th>
             </tr>
         </thead>
         <tbody>
@@ -53,7 +52,6 @@
                             <strong style="color: green;">+฿<%= tx.amount.toLocaleString(undefined, {minimumFractionDigits: 2}) %></strong>
                         <% } %>
                     </td>
-                    <!-- STORED XSS VULNERABILITY: Rendering user controlled memo string directly without encoding -->
                     <td style="background-color: #fffcf5;"><%- tx.description %></td>
                 </tr>
             <% }); %>

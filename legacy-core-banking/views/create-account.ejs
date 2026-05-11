@@ -18,11 +18,9 @@
             </select>
         </div>
 
-        <!-- Mass Assignment Vulnerability: Trusting client-side input to specify an arbitrary starting balance -->
-        <div class="form-group" style="background: #fff3cd; padding: 10px; border: 1px solid #ffeeba; border-radius: 3px;">
-            <label style="color: #856404;">Opening Deposit Balance (THB) <small>[Mass Assignment Flaw]</small></label>
+        <div class="form-group">
+            <label>Opening Deposit Balance (THB)</label>
             <input type="number" step="0.01" name="balance" value="0.00" placeholder="0.00">
-            <small style="color: #856404; display: block; margin-top: 4px;">Attacker can inject any numeric value to instantly credit their new account out of thin air.</small>
         </div>
 
         <button type="submit" class="btn">Confirm Creation</button>

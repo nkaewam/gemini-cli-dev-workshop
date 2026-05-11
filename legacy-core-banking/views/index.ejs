@@ -4,13 +4,12 @@
 <p>Hello, <strong><%= fullName %></strong>! Your session is active.</p>
 
 <div style="background: #eef; padding: 15px; border-left: 4px solid #003366; margin-bottom: 20px;">
-    <h4 style="margin-top: 0;">Session Profile (Sourced from insecure client cookies)</h4>
+    <h4 style="margin-top: 0;">Session Profile</h4>
     <ul>
         <li><strong>User ID:</strong> <code><%= userId %></code></li>
         <li><strong>Username:</strong> <code><%= username %></code></li>
         <li><strong>Access Role:</strong> <code><%= role %></code></li>
     </ul>
-    <p><small><em>Security Note: Because session state resides in plaintext client cookies, you can use your browser's developer tools (Application -> Cookies) to alter your <code>userId</code> or <code>role</code> to instantly hijack other user sessions or elevate permissions!</em></small></p>
 </div>
 
 <h3>Core Actions</h3>
@@ -20,16 +19,5 @@
     <a href="/transfers" class="btn">💸 Wire Transfer Funds</a>
 </div>
 
-<hr style="border: 0; border-top: 1px solid #eee; margin: 30px 0;">
-
-<h3>System Vulnerabilities Map</h3>
-<p>This legacy core banking application models multiple common flaws found in unhardened Node.js systems:</p>
-<ul>
-    <li><strong>SQL Injection (SQLi):</strong> Custom authentication and account lookup endpoints construct string payloads directly.</li>
-    <li><strong>Broken Access Control / IDOR:</strong> Query parameters (e.g. <code>?userId=X</code>) and missing ownership verification allow unauthorized enumeration of sensitive user balances and transaction wires.</li>
-    <li><strong>Mass Assignment:</strong> Creating accounts allows passing unauthorized extra attributes (like arbitrary opening balances).</li>
-    <li><strong>Stored & Reflected XSS:</strong> Output tags (<code>&lt;%- ... %&gt;</code>) are used directly on unvalidated input and database attributes.</li>
-    <li><strong>Business Logic Flaws:</strong> Account ledger verification does not prevent negative money transactions, allowing reverse asset siphoning.</li>
-</ul>
 
 <%- include('layout-footer') %>

@@ -13,11 +13,10 @@
 
 <div style="margin-bottom: 15px;">
     <form method="GET" action="/accounts" style="display: inline-block;">
-        <label><small>Simulate IDOR (Query param override):</small></label>
+        <label><small>Filter by User ID:</small></label>
         <input type="number" name="userId" value="<%= targetUserId %>" style="width: 80px; padding: 4px;">
         <button type="submit" class="btn" style="padding: 4px 8px;">Fetch</button>
     </form>
-    <span style="margin-left: 10px;"><small><em>(Try switching User ID to 1 to view the Master Bank Ledger records)</em></small></span>
 </div>
 
 <% if (accounts && accounts.length > 0) { %>

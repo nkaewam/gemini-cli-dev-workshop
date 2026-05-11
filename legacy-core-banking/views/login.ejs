@@ -4,7 +4,6 @@
 <p>Please enter your authentication credentials below to access core banking functions.</p>
 
 <% if (error) { %>
-    <!-- Reflected XSS Vulnerability: Rendering unescaped output directly -->
     <div class="alert"><strong>Error:</strong> <%- error %></div>
 <% } %>
 
@@ -23,7 +22,7 @@
 </div>
 
 <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #eee;">
-    <p><small><strong>Demo Hints:</strong> Try SQL injection in username: <code>' OR 1=1 --</code> or use seeded accounts: <code>admin</code> / <code>admin123!</code> or <code>johndoe</code> / <code>password123</code></small></p>
+    <p><small><strong>Demo Accounts:</strong> <code>admin</code> / <code>admin123!</code> or <code>johndoe</code> / <code>password123</code></small></p>
 </div>
 
 <%- include('layout-footer') %>

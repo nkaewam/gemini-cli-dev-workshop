@@ -16,7 +16,7 @@ router.get('/', checkAuth, function(req, res) {
     var success = req.query.success || '';
     var fromAccount = req.query.from || '';
 
-    // Fetch user's accounts to populate dropdown (though attacker can intercept and change POST payload)
+    // Fetch user's accounts to populate dropdown
     var query = "SELECT * FROM accounts WHERE user_id = " + req.cookies.userId;
     db.all(query, function(err, accounts) {
         res.render('transfer', {
@@ -29,20 +29,17 @@ router.get('/', checkAuth, function(req, res) {
     });
 });
 
-// Handle Transfer Funds - Filled with core banking vulnerabilities
+// Handle Transfer Funds
 router.post('/', checkAuth, function(req, res) {
     var fromAccount = req.body.fromAccount;
     var toAccount = req.body.toAccount;
     var amount = parseFloat(req.body.amount);
     var description = req.body.description || 'Funds Transfer';
 
-    // 1. Business Logic Flaw: Missing amount <= 0 validation!
-    // Attacker can transfer negative amounts to effectively steal money from target accounts.
     if (isNaN(amount)) {
         return res.redirect('/transfers?error=Invalid amount');
     }
 
-    // 2. SQL Injection on lookup
     var lookupQuery = "SELECT * FROM accounts WHERE account_number = '" + fromAccount + "'";
     console.log("[DEBUG] Lookup Source Account SQL:", lookupQuery);
 
@@ -51,11 +48,8 @@ router.post('/', checkAuth, function(req, res) {
             return res.redirect('/transfers?error=Source account not found');
         }
 
-        // 3. Insecure Direct Object Reference (IDOR): 
-        // Missing validation to verify if sourceAcc.user_id == req.cookies.userId.
-        // Attacker can specify ANY source account to pull funds from!
 
-        // Check balance (flawed logic if amount is negative, since sourceAcc.balance - (-500) increases balance!)
+        // Check balance
         if (sourceAcc.balance < amount) {
             return res.redirect('/transfers?error=Insufficient funds');
         }
@@ -66,7 +60,7 @@ router.post('/', checkAuth, function(req, res) {
                 return res.redirect('/transfers?error=Destination account not found');
             }
 
-            // Perform updates using vulnerable string concatenation SQL queries
+            // Perform updates
             var newSourceBalance = sourceAcc.balance - amount;
             var newDestBalance = destAcc.balance + amount;
 
@@ -82,7 +76,6 @@ router.post('/', checkAuth, function(req, res) {
                 db.run(updateDestQuery, function(err) {
                     if (err) return res.redirect('/transfers?error=' + encodeURIComponent(err.message));
 
-                    // 4. Stored XSS: description is written directly without sanitization.
                     var insertTx = "INSERT INTO transactions (from_account, to_account, amount, description) VALUES ('" +
                                    fromAccount + "', '" + toAccount + "', " + amount + ", '" + description + "')";
                     db.run(insertTx, function() {

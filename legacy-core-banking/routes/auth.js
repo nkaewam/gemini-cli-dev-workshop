@@ -8,23 +8,21 @@ router.get('/login', function(req, res) {
     res.render('login', { error: error });
 });
 
-// Handle Login - Highly Vulnerable to SQL Injection
+// Handle Login
 router.post('/login', function(req, res) {
     var username = req.body.username;
     var password = req.body.password;
 
-    // SQL Injection Vulnerability: Direct String Concatenation
     var query = "SELECT * FROM users WHERE username = '" + username + "' AND password = '" + password + "'";
     console.log("[DEBUG] Executing SQL:", query);
 
     db.get(query, function(err, user) {
         if (err) {
-            // Reflected XSS/Information Disclosure: Returning Raw Error details in URL
+            // Handle error
             return res.redirect('/login?error=' + encodeURIComponent(err.message));
         }
         if (user) {
-            // Broken Authentication / Insecure Session Management:
-            // Plaintext unhashed role and ID placed directly into client-side accessible cookies.
+            // Set session cookies
             res.cookie('userId', user.id);
             res.cookie('username', user.username);
             res.cookie('fullName', user.fullName);
@@ -42,16 +40,14 @@ router.get('/register', function(req, res) {
     res.render('register', { error: error });
 });
 
-// Handle Register - Vulnerable to Mass Assignment / Over-posting & SQLi
+// Handle Register
 router.post('/register', function(req, res) {
     var username = req.body.username;
     var password = req.body.password;
     var fullName = req.body.fullName;
     
-    // Mass Assignment vulnerability: Allows attacker to specify custom role from hidden inputs/API requests
     var role = req.body.role || 'customer';
 
-    // SQL Injection Vulnerability on Insert
     var query = "INSERT INTO users (username, password, fullName, role) VALUES ('" + 
                 username + "', '" + password + "', '" + fullName + "', '" + role + "')";
     console.log("[DEBUG] Executing SQL:", query);

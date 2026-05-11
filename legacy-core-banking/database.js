@@ -18,7 +18,7 @@ function initDb() {
         db.run("DROP TABLE IF EXISTS accounts");
         db.run("DROP TABLE IF EXISTS transactions");
 
-        // Create users table (passwords stored in plaintext)
+        // Create users table
         db.run(`CREATE TABLE users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             username TEXT UNIQUE,
@@ -73,7 +73,7 @@ function initDb() {
         insertTx.run("ACC-000001", "ACC-200300", 12500.75, "Initial Deposit - VIP Account");
         insertTx.finalize();
 
-        console.log('Database seeded with initial vulnerable records.');
+        console.log('Database seeded with initial records.');
     });
 }
 
