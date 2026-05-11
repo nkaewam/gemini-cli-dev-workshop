@@ -87,8 +87,12 @@ app.use(function(err, req, res, next) {
 
 // Start server
 var PORT = process.env.PORT || 3000;
-app.listen(PORT, function() {
-    console.log('========================================================');
-    console.log(' Legacy Core Banking App running on http://localhost:' + PORT);
-    console.log('========================================================');
-});
+if (require.main === module) {
+    app.listen(PORT, function() {
+        console.log('========================================================');
+        console.log(' Legacy Core Banking App running on http://localhost:' + PORT);
+        console.log('========================================================');
+    });
+}
+
+module.exports = app;

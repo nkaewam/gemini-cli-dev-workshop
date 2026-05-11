@@ -1,7 +1,7 @@
 var sqlite3 = require('sqlite3').verbose();
 var path = require('path');
 
-var dbPath = path.resolve(__dirname, 'banking.db');
+var dbPath = process.env.DB_PATH || path.resolve(__dirname, 'banking.db');
 var db = new sqlite3.Database(dbPath, function(err) {
     if (err) {
         console.error('Error opening database:', err.message);
