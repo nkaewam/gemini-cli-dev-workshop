@@ -1,0 +1,66 @@
+<%- include('layout-header') %>
+
+<h2>Account Ledger View</h2>
+
+<div style="background: #fff; padding: 15px; border: 1px solid #ddd; margin-bottom: 20px;">
+    <h3 style="margin: 0 0 10px 0; color: #003366;"><%= account.account_number %></h3>
+    <p style="margin: 5px 0;"><strong>Type:</strong> <%= account.account_type %></p>
+    <p style="margin: 5px 0; font-size: 18px;">
+        <strong>Ledger Balance:</strong> 
+        <span style="color: <%= account.balance < 0 ? 'red' : 'green' %>;">
+            ฿<%= account.balance.toLocaleString(undefined, {minimumFractionDigits: 2}) %>
+        </span>
+    </p>
+    <p style="margin: 5px 0; font-size: 12px; color: #888;">Mapped User ID: <%= account.user_id %></p>
+</div>
+
+<div style="margin-bottom: 15px;">
+    <a href="/transfers?from=<%= account.account_number %>" class="btn" style="background-color: #28a745;">Initiate Transfer From This Account</a>
+    <a href="/accounts" class="btn" style="margin-left: 10px;">Back to Account Registry</a>
+</div>
+
+<h3>Transaction Activity History</h3>
+<p><small>Descriptions rendered directly without HTML escaping to demonstrate <strong>Stored XSS</strong> payloads.</small></p>
+
+<% if (typeof error !== 'undefined' && error) { %>
+    <div class="alert"><%- error %></div>
+<% } %>
+<% if (typeof success !== 'undefined' && success) { %>
+    <div class="success"><%- success %></div>
+<% } %>
+
+<% if (transactions && transactions.length > 0) { %>
+    <table>
+        <thead>
+            <tr>
+                <th>Timestamp</th>
+                <th>Source Account</th>
+                <th>Destination Account</th>
+                <th>Amount (THB)</th>
+                <th>Memo Description <small>[Stored XSS]</small></th>
+            </tr>
+        </thead>
+        <tbody>
+            <% transactions.forEach(function(tx) { %>
+                <tr>
+                    <td><small><%= tx.timestamp %></small></td>
+                    <td><code><%= tx.from_account %></code></td>
+                    <td><code><%= tx.to_account %></code></td>
+                    <td>
+                        <% if (tx.from_account === account.account_number) { %>
+                            <strong style="color: red;">-฿<%= tx.amount.toLocaleString(undefined, {minimumFractionDigits: 2}) %></strong>
+                        <% } else { %>
+                            <strong style="color: green;">+฿<%= tx.amount.toLocaleString(undefined, {minimumFractionDigits: 2}) %></strong>
+                        <% } %>
+                    </td>
+                    <!-- STORED XSS VULNERABILITY: Rendering user controlled memo string directly without encoding -->
+                    <td style="background-color: #fffcf5;"><%- tx.description %></td>
+                </tr>
+            <% }); %>
+        </tbody>
+    </table>
+<% } else { %>
+    <p style="padding: 15px; background: #f9f9f9; border: 1px solid #eee;">No transactions logged for this ledger yet.</p>
+<% } %>
+
+<%- include('layout-footer') %>

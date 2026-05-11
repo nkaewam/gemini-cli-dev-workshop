@@ -1,0 +1,26 @@
+{
+  "name": "legacy-core-banking",
+  "version": "1.0.0",
+  "description": "A legacy core banking Express application intentionally filled with vulnerabilities for workshop/demonstration purposes.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "body-parser": "^1.20.2",
+    "cookie-parser": "^1.4.6",
+    "ejs": "^3.1.9",
+    "express": "^4.18.2",
+    "sqlite3": "^5.1.7"
+  },
+  "keywords": [
+    "vulnerable",
+    "banking",
+    "legacy",
+    "express",
+    "sqlite"
+  ],
+  "author": "",
+  "license": "ISC"
+}

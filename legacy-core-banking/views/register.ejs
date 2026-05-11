@@ -1,0 +1,36 @@
+<%- include('layout-header') %>
+
+<h2>New Customer Registration</h2>
+<p>Enroll in the core banking network.</p>
+
+<% if (error) { %>
+    <div class="alert"><strong>Registration Error:</strong> <%- error %></div>
+<% } %>
+
+<div style="max-width: 400px;">
+    <form action="/register" method="POST">
+        <div class="form-group">
+            <label>Full Name</label>
+            <input type="text" name="fullName" required placeholder="John Doe">
+        </div>
+        <div class="form-group">
+            <label>Desired Username</label>
+            <input type="text" name="username" required placeholder="johndoe">
+        </div>
+        <div class="form-group">
+            <label>Password</label>
+            <input type="password" name="password" required placeholder="Set a strong password">
+        </div>
+        
+        <!-- Mass Assignment vulnerability: Attacker can manipulate hidden or added POST parameters to assign an arbitrary role -->
+        <input type="hidden" name="role" value="customer">
+        
+        <button type="submit" class="btn">Register Account</button>
+    </form>
+</div>
+
+<div style="margin-top: 20px;">
+    <p><small>Note: Passwords are saved without hashing to allow legacy core mainframe synchronization.</small></p>
+</div>
+
+<%- include('layout-footer') %>

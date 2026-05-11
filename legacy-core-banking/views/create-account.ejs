@@ -1,0 +1,36 @@
+<%- include('layout-header') %>
+
+<h2>Open New Bank Account</h2>
+<p>Initialize a new operating ledger entry under your account profile.</p>
+
+<% if (error) { %>
+    <div class="alert"><%- error %></div>
+<% } %>
+
+<div style="max-width: 400px;">
+    <form action="/accounts/create" method="POST">
+        <div class="form-group">
+            <label>Account Product Type</label>
+            <select name="accountType">
+                <option value="Savings">Standard Savings Account</option>
+                <option value="Checking">Operating Checking Account</option>
+                <option value="Money Market">High-Yield Money Market</option>
+            </select>
+        </div>
+
+        <!-- Mass Assignment Vulnerability: Trusting client-side input to specify an arbitrary starting balance -->
+        <div class="form-group" style="background: #fff3cd; padding: 10px; border: 1px solid #ffeeba; border-radius: 3px;">
+            <label style="color: #856404;">Opening Deposit Balance (THB) <small>[Mass Assignment Flaw]</small></label>
+            <input type="number" step="0.01" name="balance" value="0.00" placeholder="0.00">
+            <small style="color: #856404; display: block; margin-top: 4px;">Attacker can inject any numeric value to instantly credit their new account out of thin air.</small>
+        </div>
+
+        <button type="submit" class="btn">Confirm Creation</button>
+    </form>
+</div>
+
+<div style="margin-top: 20px;">
+    <a href="/accounts">Back to Accounts</a>
+</div>
+
+<%- include('layout-footer') %>

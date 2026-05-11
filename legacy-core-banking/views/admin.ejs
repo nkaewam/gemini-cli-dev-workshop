@@ -1,0 +1,65 @@
+<%- include('layout-header') %>
+
+<h2>🛠️ Mainframe Operator Direct SQL Debug Console</h2>
+<p style="color: #cc0000;"><strong>CRITICAL SECURITY RISK:</strong> Authorized Operators only. Arbitrary SQL statements executed directly against operating memory clusters.</p>
+
+<% if (error) { %>
+    <div class="alert"><strong>Execution Failure:</strong> <%- error %></div>
+<% } %>
+
+<div style="margin-bottom: 25px;">
+    <form action="/admin" method="POST">
+        <div class="form-group">
+            <label>Direct SQL Payload Command</label>
+            <textarea name="sql" rows="4" required placeholder="SELECT * FROM users"><%= sql %></textarea>
+        </div>
+        <button type="submit" class="btn btn-warning">Execute Raw Query</button>
+    </form>
+</div>
+
+<div style="background: #f9f9f9; padding: 15px; border: 1px solid #ddd;">
+    <h4>Command Output / Result set</h4>
+    <% if (queryResult) { %>
+        <% if (Array.isArray(queryResult)) { %>
+            <p>Rows Returned: <strong><%= queryResult.length %></strong></p>
+            <% if (queryResult.length > 0) { %>
+                <div style="overflow-x: auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <% Object.keys(queryResult[0]).forEach(function(key) { %>
+                                    <th><%= key %></th>
+                                <% }); %>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% queryResult.forEach(function(row) { %>
+                                <tr>
+                                    <% Object.keys(row).forEach(function(key) { %>
+                                        <td><code><%= JSON.stringify(row[key]) %></code></td>
+                                    <% }); %>
+                                </tr>
+                            <% }); %>
+                        </tbody>
+                    </table>
+                </div>
+            <% } %>
+        <% } else { %>
+            <pre style="background: #111; color: #0f0; padding: 10px; border-radius: 3px;"><%= JSON.stringify(queryResult, null, 2) %></pre>
+        <% } %>
+    <% } else { %>
+        <p style="color: #777;"><em>Awaiting direct command submission...</em></p>
+    <% } %>
+</div>
+
+<div style="margin-top: 30px;">
+    <h4>Handy Reference Queries:</h4>
+    <ul>
+        <li>List all credentials: <code>SELECT * FROM users</code></li>
+        <li>List all accounts: <code>SELECT * FROM accounts</code></li>
+        <li>List all transaction histories: <code>SELECT * FROM transactions</code></li>
+        <li>Wipe specific ledger records: <code>DELETE FROM accounts WHERE id = X</code></li>
+    </ul>
+</div>
+
+<%- include('layout-footer') %>

@@ -1,0 +1,57 @@
+<%- include('layout-header') %>
+
+<h2>Account Registry</h2>
+
+<% if (error) { %>
+    <div class="alert"><%- error %></div>
+<% } %>
+<% if (success) { %>
+    <div class="success"><%- success %></div>
+<% } %>
+
+<p>Viewing active operating records associated with Target User ID: <strong><%= targetUserId %></strong></p>
+
+<div style="margin-bottom: 15px;">
+    <form method="GET" action="/accounts" style="display: inline-block;">
+        <label><small>Simulate IDOR (Query param override):</small></label>
+        <input type="number" name="userId" value="<%= targetUserId %>" style="width: 80px; padding: 4px;">
+        <button type="submit" class="btn" style="padding: 4px 8px;">Fetch</button>
+    </form>
+    <span style="margin-left: 10px;"><small><em>(Try switching User ID to 1 to view the Master Bank Ledger records)</em></small></span>
+</div>
+
+<% if (accounts && accounts.length > 0) { %>
+    <table>
+        <thead>
+            <tr>
+                <th>Account Number</th>
+                <th>Account Type</th>
+                <th>Current Balance (THB)</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% accounts.forEach(function(acc) { %>
+                <tr>
+                    <td><strong><%= acc.account_number %></strong></td>
+                    <td><%= acc.account_type %></td>
+                    <td style="color: <%= acc.balance < 0 ? 'red' : 'green' %>;">
+                        <strong>฿<%= acc.balance.toLocaleString(undefined, {minimumFractionDigits: 2}) %></strong>
+                    </td>
+                    <td>
+                        <a href="/accounts/<%= acc.account_number %>" class="btn" style="padding: 4px 8px;">Ledger Details</a>
+                        <a href="/transfers?from=<%= acc.account_number %>" class="btn" style="padding: 4px 8px; background-color: #28a745;">Transfer Out</a>
+                    </td>
+                </tr>
+            <% }); %>
+        </tbody>
+    </table>
+<% } else { %>
+    <p style="padding: 20px; background: #f9f9f9; border: 1px solid #ddd;">No accounts found mapped to this user ID.</p>
+<% } %>
+
+<div style="margin-top: 20px;">
+    <a href="/accounts/create" class="btn">Open Another Account</a>
+</div>
+
+<%- include('layout-footer') %>
